@@ -3,6 +3,14 @@ import Tile from "./Tile";
 
 export type Tile = "X" | "O" | null;
 
+function availableTiles(board: Tile[]) {
+  let tiles: number[] = [];
+  for (let i = 0; i < board.length; i++) {
+    if (board[i] === null) tiles.push(i);
+  }
+  return tiles;
+}
+
 const winConditions = [
   [0, 1, 2],
   [3, 4, 5],
@@ -27,6 +35,9 @@ function checkWinner(board: Tile[]) {
     }
     return null;
   });
+  if (availableTiles(board).length === 0) {
+    console.log("It's a tie");
+  }
 }
 
 export default function Board() {
@@ -38,13 +49,13 @@ export default function Board() {
     setBoard(newBoard);
   }
 
+  availableTiles(board);
   function handleClick(index: number): void {
     if (board[index] === null) {
       let updatedBoard = board;
       updatedBoard[index] = currPlayer;
       setBoard(updatedBoard);
       setCurrPlayer((c) => (c == "X" ? "O" : "X"));
-      console.log(board);
     }
   }
   checkWinner(board);

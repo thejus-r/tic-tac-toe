@@ -1,66 +1,50 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import Alert from "./Alert";
 import Tile from "./Tile";
-
-export type Tile = "X" | "O" | null;
-
-function availableTiles(board: Tile[]) {
-  let tiles: number[] = [];
-  for (let i = 0; i < board.length; i++) {
-    if (board[i] === null) tiles.push(i);
-  }
-  return tiles;
-}
-
-const winConditions = [
-  [0, 1, 2],
-  [3, 4, 5],
-  [6, 7, 8],
-  [0, 3, 6],
-  [1, 4, 7],
-  [2, 5, 8],
-  [0, 4, 8],
-  [3, 4, 6],
-];
-
-function checkWinner(board: Tile[]) {
-  winConditions.map(([a, b, c]) => {
-    if (
-      board[a] &&
-      board[a] === board[b] &&
-      board[b] === board[c] &&
-      board[c]
-    ) {
-      console.log("Winner is:", board[a]);
-      return;
-    }
-    return null;
-  });
-  if (availableTiles(board).length === 0) {
-    console.log("It's a tie");
-  }
-}
+import { checkWinner, availableTiles } from "../utils";
+import type { TileType } from "../utils";
+import useGameStore from "../gameStore";
 
 export default function Board() {
-  const [board, setBoard] = useState<Tile[]>(Array(9).fill(null));
-  const [currPlayer, setCurrPlayer] = useState<Tile>("X");
+  const [isOpen, setIsOpen] = useState(false);
+  const {
+    gameStatus,
+    currentPlayer,
+    board,
+    updateBoard,
+    switchPlayer,
+    updateGameStatus,
+  } = useGameStore();
 
-  function resetBoard() {
-    const newBoard = Array(9).fill(null);
-    setBoard(newBoard);
-  }
+  useEffect(() => {
+    switch (checkWinner(board)) {
+      case "X":
+        updateGameStatus("X wins");
+        break;
+      case "O":
+        updateGameStatus("O Wins");
+        break;
+      case "tie":
+        updateGameStatus("Tie");
+        break;
+      default:
+        break;
+    }
+  }, [currentPlayer]);
 
-  availableTiles(board);
   function handleClick(index: number): void {
     if (board[index] === null) {
       let updatedBoard = board;
-      updatedBoard[index] = currPlayer;
-      setBoard(updatedBoard);
-      setCurrPlayer((c) => (c == "X" ? "O" : "X"));
+      updatedBoard[index] = currentPlayer;
+      updateBoard(updatedBoard);
+      switchPlayer();
     }
   }
-  checkWinner(board);
+
+  console.log(gameStatus);
   return (
     <>
+      {isOpen && <Alert context="X Wins" />}
       <div className="bg-stone-800 p-4 rounded-lg border-2 border-stone-700 grid grid-cols-3 gap-4">
         {board.map((tile, index) => (
           <Tile
@@ -70,14 +54,6 @@ export default function Board() {
             key={index}
           />
         ))}
-      </div>
-      <div className="mt-6">
-        <button
-          onClick={resetBoard}
-          className="bg-red-500 text-md rounded-md p-4 py-1.5"
-        >
-          Reset
-        </button>
       </div>
     </>
   );

@@ -1,11 +1,11 @@
-import type { Tile } from "./Board";
+import type { TileType } from "../utils";
 
 export default function Tile({
   value,
   handleClick,
   index,
 }: {
-  value: Tile;
+  value: TileType;
   handleClick: any;
   index: number;
 }) {

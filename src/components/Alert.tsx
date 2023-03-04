@@ -1,24 +1,67 @@
 import { createPortal } from "react-dom";
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
 import useGameStore from "../gameStore";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 
-function Alert({ context }: { context: string }) {
+const alertOverlayVarients: Variants = {
+  initial: {
+    opacity: 0,
+  },
+  animate: {
+    opacity: 1,
+  },
+  exit: {
+    opacity: 0,
+  },
+};
+
+const alertBoxVarients: Variants = {
+  initial: {
+    opacity: 0,
+    y: 100,
+  },
+  animate: {
+    opacity: 1,
+    y: 0,
+  },
+  exit: {
+    opacity: 0,
+    y: 100,
+  },
+};
+
+function Alert() {
   const resetGame = useGameStore((state) => state.resetGame);
+  const gameStatus = useGameStore((state) => state.gameStatus);
   return createPortal(
-    <div className="absolute flex flex-col justify-center items-center h-screen w-screen top-0 left-0 bg-black/75 backdrop-blur-md text-white">
-      <div className="bg-stone-900 flex w-1/2 max-w-lg flex-col gap-2 p-4 rounded-lg border-2 border-stone-800">
-        <div className="flex flex-col justify-center items-center">
-          <div>X</div>
-          <p className="text-2xl font-bold uppercase">{context}</p>
-        </div>
-        <button
-          onClick={() => resetGame()}
-          className="py-2 font-medium text-md rounded-lg border-2 border-red-900 bg-red-900/50"
+    <AnimatePresence>
+      {gameStatus !== "ongoing" && (
+        <motion.div
+          variants={alertOverlayVarients}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+          className="absolute flex flex-col shadow-2xl justify-center items-center h-screen w-screen top-0 left-0 bg-black/60 backdrop-blur-md text-white"
         >
-          Restart
-        </button>
-      </div>
-    </div>,
+          <motion.div
+            variants={alertBoxVarients}
+            className="bg-stone-900  flex w-1/2 max-w-lg flex-col gap-2 p-4 rounded-lg border-2 border-stone-800"
+          >
+            <div className="flex flex-col justify-center items-center">
+              <div>X</div>
+              <p className="text-2xl font-bold uppercase">{gameStatus}</p>
+            </div>
+            <button
+              onClick={() => resetGame()}
+              className="py-2 inline-flex items-center justify-center gap-2 font-medium text-md rounded-lg border-2 border-red-900 bg-red-900/50"
+            >
+              <ArrowPathIcon className="w-4 h-4 stroke-2" />
+              Restart
+            </button>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>,
     document.body
   );
 }

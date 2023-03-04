@@ -6,15 +6,10 @@ import type { TileType } from "../utils";
 import useGameStore from "../gameStore";
 
 export default function Board() {
-  const [isOpen, setIsOpen] = useState(false);
-  const {
-    gameStatus,
-    currentPlayer,
-    board,
-    updateBoard,
-    switchPlayer,
-    updateGameStatus,
-  } = useGameStore();
+  const resetGame = useGameStore((state) => state.resetGame);
+  const [showAlert, setShowAlert] = useState(false);
+  const { gameStatus, currentPlayer, board, updateBoard, updateGameStatus } =
+    useGameStore();
 
   useEffect(() => {
     switch (checkWinner(board)) {
@@ -34,17 +29,14 @@ export default function Board() {
 
   function handleClick(index: number): void {
     if (board[index] === null) {
-      let updatedBoard = board;
-      updatedBoard[index] = currentPlayer;
-      updateBoard(updatedBoard);
-      switchPlayer();
+      updateBoard(index);
     }
   }
 
   console.log(gameStatus);
   return (
     <>
-      {isOpen && <Alert context="X Wins" />}
+      {gameStatus !== "ongoing" && <Alert context={gameStatus} />}
       <div className="bg-stone-800 p-4 rounded-lg border-2 border-stone-700 grid grid-cols-3 gap-4">
         {board.map((tile, index) => (
           <Tile
@@ -54,6 +46,7 @@ export default function Board() {
             key={index}
           />
         ))}
+        <button onClick={() => resetGame()}>Reset</button>
       </div>
     </>
   );

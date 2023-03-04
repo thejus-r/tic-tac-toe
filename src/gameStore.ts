@@ -9,8 +9,7 @@ type State = {
 
 type Actions = {
   updateGameStatus: (gameStatus: State["gameStatus"]) => void;
-  updateBoard: (board: TileType[]) => void;
-  switchPlayer: () => void;
+  updateBoard: (index: number) => void;
   resetGame: () => void;
 };
 
@@ -21,15 +20,23 @@ const initialState: State = {
 };
 
 const useGameStore = create<State & Actions>((set, get) => ({
+  // sets an initial state for the game
   ...initialState,
-  updateBoard: (board) => set(() => ({ board: board })),
-  switchPlayer: () =>
+  updateBoard: (index) => {
+    let updatedBoard = get().board;
+    updatedBoard[index] = get().currentPlayer;
     set((state) => ({
+      board: updatedBoard,
       currentPlayer: state.currentPlayer === "X" ? "O" : "X",
-    })),
+    }));
+  },
   updateGameStatus: (gameStatus) => set(() => ({ gameStatus: gameStatus })),
   resetGame: () => {
-    set(initialState);
+    let board = Array(9).fill(null);
+    set(() => ({
+      ...initialState,
+      board: board,
+    }));
   },
 }));
 

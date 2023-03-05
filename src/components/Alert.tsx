@@ -2,6 +2,8 @@ import { createPortal } from "react-dom";
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
 import useGameStore from "../gameStore";
 import { motion, AnimatePresence, Variants } from "framer-motion";
+import Cross from "./Cross";
+import Circle from "./Circle";
 
 const alertOverlayVarients: Variants = {
   initial: {
@@ -48,8 +50,11 @@ function Alert() {
             className="bg-stone-900  flex w-1/2 max-w-lg flex-col gap-2 p-4 rounded-lg border-2 border-stone-800"
           >
             <div className="flex flex-col justify-center items-center">
-              <div>X</div>
-              <p className="text-2xl font-bold uppercase">{gameStatus}</p>
+              <div className="w-24 h-24 bg-stone-900 p-4">
+                {gameStatus === "X wins" && <Cross />}
+                {gameStatus === "O Wins" && <Circle />}
+              </div>
+              <p>Wins</p>
             </div>
             <button
               onClick={() => resetGame()}

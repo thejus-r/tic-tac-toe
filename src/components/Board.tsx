@@ -2,12 +2,11 @@ import { useEffect, useState } from "react";
 import Alert from "./Alert";
 import Tile from "./Tile";
 import { checkWinner, availableTiles } from "../utils";
-import type { TileType } from "../utils";
 import useGameStore from "../gameStore";
+import { AnimatePresence } from "framer-motion";
 
 export default function Board() {
   const resetGame = useGameStore((state) => state.resetGame);
-  const [showAlert, setShowAlert] = useState(false);
   const { gameStatus, currentPlayer, board, updateBoard, updateGameStatus } =
     useGameStore();
 
@@ -36,7 +35,7 @@ export default function Board() {
   console.log(gameStatus);
   return (
     <>
-      {gameStatus !== "ongoing" && <Alert context={gameStatus} />}
+      <Alert />
       <div className="bg-stone-800 p-4 rounded-lg border-2 border-stone-700 grid grid-cols-3 gap-4">
         {board.map((tile, index) => (
           <Tile
@@ -46,7 +45,6 @@ export default function Board() {
             key={index}
           />
         ))}
-        <button onClick={() => resetGame()}>Reset</button>
       </div>
     </>
   );

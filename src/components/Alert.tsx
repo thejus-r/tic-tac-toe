@@ -4,6 +4,7 @@ import useGameStore from "../gameStore";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import Cross from "./Cross";
 import Circle from "./Circle";
+import { ReactElement } from "react";
 
 const alertOverlayVarients: Variants = {
   initial: {
@@ -49,12 +50,8 @@ function Alert() {
             variants={alertBoxVarients}
             className="bg-stone-900  flex w-1/2 max-w-lg flex-col gap-2 p-4 rounded-lg border-2 border-stone-800"
           >
-            <div className="flex flex-col justify-center items-center">
-              <div className="w-24 h-24 bg-stone-900 p-4">
-                {gameStatus === "X wins" && <Cross />}
-                {gameStatus === "O Wins" && <Circle />}
-              </div>
-              <p>Wins</p>
+            <div className="p-4">
+              <Content />
             </div>
             <button
               onClick={() => resetGame()}
@@ -72,3 +69,31 @@ function Alert() {
 }
 
 export default Alert;
+
+function Content(): ReactElement | null {
+  const gameStatus = useGameStore((state) => state.gameStatus);
+  switch (gameStatus) {
+    case "O Wins":
+      return (
+        <div className="flex flex-col justify-center items-center gap-2">
+          <div className="p-4 w-24 h-24 rounded-md bg-stone-800 border-2 border-stone-700">
+            <Circle />
+          </div>
+          <p className="text-xl font-bold">Wins!</p>
+        </div>
+      );
+    case "X wins":
+      return (
+        <div className="flex flex-col justify-center items-center gap-2">
+          <div className="p-4 w-24 h-24 rounded-md bg-stone-800 border-2 border-stone-700">
+            <Cross />
+          </div>
+          <p className="text-xl font-bold">Wins!</p>
+        </div>
+      );
+    case "Tie":
+      return <div className="text-xl text-center font-bold">It's a tie!</div>;
+    default:
+      return null;
+  }
+}

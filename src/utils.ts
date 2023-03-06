@@ -32,7 +32,7 @@ export function checkWinner(board: TileType[]): string | null {
       winner = board[a];
     }
   });
-  if (availableTiles(board).length === 0) {
+  if (winner === null && availableTiles(board).length === 0) {
     return "tie";
   }
   return winner;
